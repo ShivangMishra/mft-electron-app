@@ -1,4 +1,4 @@
-import { Client, ClientUnaryCall, ServiceError, credentials } from '@grpc/grpc-js';
+import { ServiceError, credentials } from '@grpc/grpc-js';
 import { org } from '../../../node-sdk/src/airavata_mft_sdk/common/StorageCommon';
 import StorageListResponse = org.apache.airavata.mft.resource.stubs.storage.common.StorageListResponse;
 
@@ -8,7 +8,7 @@ import StorageListRequest = org.apache.airavata.mft.resource.stubs.storage.commo
 import StorageSearchRequest = org.apache.airavata.mft.resource.stubs.storage.common.StorageSearchRequest;
 import SecretForStorageGetRequest = org.apache.airavata.mft.resource.stubs.storage.common.SecretForStorageGetRequest;
 import SecretForStorage = org.apache.airavata.mft.resource.stubs.storage.common.SecretForStorage;
-
+import StorageType = org.apache.airavata.mft.resource.stubs.storage.common.StorageType;
 
 const client = new StorageCommonServiceClient('localhost:7003', credentials.createInsecure());
 
@@ -51,4 +51,4 @@ const searchStoragesRpc = (storageName: string): Promise<StorageListResponse> =>
     });
 }
 
-export { listStoragesRpc, searchStoragesRpc, secretForStorageGetRpc, SecretForStorage, StorageCommonServiceClient, StorageListRequest, StorageListResponse, StorageSearchRequest, SecretForStorageGetRequest };
+export { listStoragesRpc, searchStoragesRpc, secretForStorageGetRpc, SecretForStorage, StorageCommonServiceClient, StorageListRequest, StorageListResponse, StorageSearchRequest, SecretForStorageGetRequest, StorageType, };

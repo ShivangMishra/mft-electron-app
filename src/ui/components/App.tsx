@@ -18,12 +18,13 @@ import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 import StorageTable from "./StorageTable";
 import SearchBar from "./SearchBar";
+import { StorageType } from "../../grpc/common/storageCommon";
 
 declare global {
   interface StorageEntry {
     storageId?: string;
     storageName?: string;
-    storageType?: any;
+    storageType?: StorageType;
   }
   interface Window {
     api: {
@@ -63,12 +64,12 @@ export default function App() {
   return (
     <ThemeProvider theme={theme}>
       <Box bgcolor="background.default" width="100%">
-        <Typography variant="h4" component="h4">
+        <Typography variant="h4" component="h4" marginBottom="0.5rem">
           Storages
         </Typography>
         <Box
           display="flex"
-          width="100%"
+          width="80%"
           alignItems="center"
           marginBottom="0.5rem"
         >
@@ -82,7 +83,9 @@ export default function App() {
             <FilterList />
           </IconButton>
         </Box>
-        <StorageTable storageList={storageList} />
+        <StorageTable
+          storageList={storageList}
+        />
       </Box>
     </ThemeProvider>
   );
