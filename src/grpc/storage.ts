@@ -1,16 +1,17 @@
-import { Client, ClientUnaryCall, ServiceError, credentials } from '@grpc/grpc-js';
-import { org } from '../../node-sdk/src/airavata_mft_sdk/common/StorageCommon';
-import StorageListResponse = org.apache.airavata.mft.resource.stubs.storage.common.StorageListResponse;
+import { credentials } from "@grpc/grpc-js";
 
-import StorageCommonServiceClient = org.apache.airavata.mft.resource.stubs.storage.common.StorageCommonServiceClient;
-import StorageListRequest = org.apache.airavata.mft.resource.stubs.storage.common.StorageListRequest;
+import { searchStoragesRpc, secretForStorageGetRpc } from "./common/storageCommon";
+import { FetchResourceMetadataRequest, GetResourceMetadataFromIDsRequest, MFTTransferServiceClient } from "./mftTransferApi";
+import { ResourceMetadata } from "./mftAgentStubs";
 
-const client = new StorageCommonServiceClient('localhost:7003', credentials.createInsecure());
-const request = new StorageListRequest();
+const client = new MFTTransferServiceClient('localhost:7003', credentials.createInsecure());
 
-const listStoragesRpc = (): Promise<StorageListResponse> => {
+const lsStorage = async (storageId: string): Promise<ResourceMetadata> => {
+    const secretId = (await secretForStorageGetRpc(storageId)).secretId;
+    const request = new GetResourceMetadataFromIDsRequest({ storageId, secretId });
+    const resourceMetadataRequest = new FetchResourceMetadataRequest({ idRequest: request });
     return new Promise((resolve, reject) => {
-        client.listStorages(request, (error: ServiceError | null, response: StorageListResponse) => {
+        client.resourceMetadata(resourceMetadataRequest, (error, response) => {
             if (error) {
                 reject(error);
                 return;
@@ -20,4 +21,5 @@ const listStoragesRpc = (): Promise<StorageListResponse> => {
     });
 }
 
-export { listStoragesRpc };
+
+export { lsStorage };
