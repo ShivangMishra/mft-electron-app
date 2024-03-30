@@ -1,6 +1,7 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'path';
-import { listStoragesRpc } from './grpc/storage';
+import { listStoragesRpc } from './grpc/common/storageCommon';
+import { lsStorage } from './grpc/storage';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -37,9 +38,17 @@ const createWindow = () => {
 app.on('ready', () => {
   createWindow();
   ipcMain.on("storageList:request", async (event) => {
-    const listStoragesResponse = await listStoragesRpc();
-    const storageList = listStoragesResponse.toObject().storageList;
+    const listStoragesResponse = (await listStoragesRpc()).toObject();
+    const storageList = listStoragesResponse.storageList;
     event.reply("storageList:response", storageList);
+  });
+  ipcMain.on("storageLs:request", async (event, {
+    storageName,
+    storageId,
+    storageType
+  }) => {
+    const lsResponse = (await lsStorage(storageId)).toObject();
+    event.reply("storageLs:response", lsResponse);
   });
   app.on("activate", function () {
     // On macOS it's common to re-create a window in the app when the
