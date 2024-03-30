@@ -15,17 +15,15 @@ export default function Home(props: {}) {
   const navigate = useNavigate();
   const fetchStorages = async () => {
     const storageList = await window.api.listStorages();
-    console.log("Storages in react", storageList);
     setStorageList(storageList);
   };
 
   useEffect(() => {
-    console.log("useEffect");
     fetchStorages();
   }, []);
 
   const selectStorage = async (storage: StorageEntry) => {
-    navigate("/storage", { state: { storage} });
+    navigate("/storage", { state: { storage } });
   };
 
   return (
