@@ -37,18 +37,19 @@ const createWindow = () => {
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
   createWindow();
-  ipcMain.on("storageList:request", async (event) => {
+  ipcMain.handle("storageList:request", async (event) => {
     const listStoragesResponse = (await listStoragesRpc()).toObject();
     const storageList = listStoragesResponse.storageList;
-    event.reply("storageList:response", storageList);
+    console.log("storageList in main", storageList);
+    return storageList;
   });
-  ipcMain.on("storageLs:request", async (event, {
+  ipcMain.handle("storageLs:request", async (event, {
     storageName,
     storageId,
     storageType
   }) => {
     const lsResponse = (await lsStorage(storageId)).toObject();
-    event.reply("storageLs:response", lsResponse);
+    return lsResponse;
   });
   app.on("activate", function () {
     // On macOS it's common to re-create a window in the app when the
