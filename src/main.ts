@@ -45,11 +45,11 @@ app.on('ready', () => {
     return storageList;
   });
   ipcMain.handle("storageLs:request", async (event, {
-    storageName,
     storageId,
-    storageType
   }) => {
+    console.log("storageId in main", storageId);
     const lsResponse = (await lsStorage(storageId)).toObject();
+    console.log("lsResponse in main", JSON.stringify(lsResponse));
     return lsResponse;
   });
   app.on("activate", function () {

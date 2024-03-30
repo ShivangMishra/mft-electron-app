@@ -22,16 +22,19 @@ enum StorageType {
   HTTP = 10,
 }
 
-export default function StorageTable(props: { storageList: StorageEntry[] }) {
-  const { storageList } = props;
+export default function StorageTable(props: {
+  storageList: StorageEntry[];
+  selectStorage: (storageId: string) => void;
+}) {
+  const { storageList, selectStorage } = props;
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
         <TableHead>
           <TableRow>
             <TableCell>Storage Name</TableCell>
-            <TableCell align="right">Storage Type</TableCell>
-            <TableCell align="right">Storage ID</TableCell>
+            <TableCell align="left">Storage Type</TableCell>
+            <TableCell align="left">Storage ID</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -45,14 +48,19 @@ export default function StorageTable(props: { storageList: StorageEntry[] }) {
                 scope="row"
                 sx={{ paddingTop: 0, paddingBottom: 0 }}
               >
-                <Button sx={{ marginTop: 0, marginBottom: 0 }}>
+                <Button
+                  sx={{ marginTop: 0, marginBottom: 0 }}
+                  onClick={() => {
+                    selectStorage(storage);
+                  }}
+                >
                   {storage.storageName}
                 </Button>
               </TableCell>
-              <TableCell align="right">
+              <TableCell align="left">
                 {StorageType[storage.storageType]}
               </TableCell>
-              <TableCell align="right">{storage.storageId}</TableCell>
+              <TableCell align="left">{storage.storageId}</TableCell>
             </TableRow>
           ))}
         </TableBody>
