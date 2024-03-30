@@ -20,7 +20,7 @@ declare global {
   interface Window {
     api: {
       listStorages: () => Promise<StorageEntry[]>;
-      lsStorage: (storageId: string) => Promise<ResourceMetadata>;
+      lsStorage: (storageId: string, resourcePath?: string) => Promise<ResourceMetadata>;
     };
   }
 }

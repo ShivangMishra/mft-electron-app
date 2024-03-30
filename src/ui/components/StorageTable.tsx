@@ -24,7 +24,7 @@ enum StorageType {
 
 export default function StorageTable(props: {
   storageList: StorageEntry[];
-  selectStorage: (storageId: string) => void;
+  selectStorage: (storage: StorageEntry) => void;
 }) {
   const { storageList, selectStorage } = props;
   return (
@@ -49,7 +49,7 @@ export default function StorageTable(props: {
                 sx={{ paddingTop: 0, paddingBottom: 0 }}
               >
                 <Button
-                  sx={{ marginTop: 0, marginBottom: 0 }}
+                  sx={{ marginTop: 0, marginBottom: 0, textTransform: "none"}}
                   onClick={() => {
                     selectStorage(storage);
                   }}

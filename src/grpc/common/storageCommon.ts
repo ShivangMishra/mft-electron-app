@@ -25,7 +25,7 @@ const listStoragesRpc = (): Promise<StorageListResponse> => {
     });
 }
 
-const secretForStorageGetRpc = (storageId: string): Promise<SecretForStorage> => {
+const getSecretForStorage = (storageId: string): Promise<SecretForStorage> => {
     return new Promise((resolve, reject) => {
         const request = new SecretForStorageGetRequest({ storageId });
         client.getSecretForStorage(request, (error: ServiceError | null, response: SecretForStorage) => {
@@ -51,4 +51,4 @@ const searchStoragesRpc = (storageName: string): Promise<StorageListResponse> =>
     });
 }
 
-export { listStoragesRpc, searchStoragesRpc, secretForStorageGetRpc, SecretForStorage, StorageCommonServiceClient, StorageListRequest, StorageListResponse, StorageSearchRequest, SecretForStorageGetRequest, StorageType, };
+export { listStoragesRpc, searchStoragesRpc, getSecretForStorage, SecretForStorage, StorageCommonServiceClient, StorageListRequest, StorageListResponse, StorageSearchRequest, SecretForStorageGetRequest, StorageType, };

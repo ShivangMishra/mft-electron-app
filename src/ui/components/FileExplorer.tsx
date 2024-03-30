@@ -47,8 +47,9 @@ const data = [
 export default function FileExplorer(props: {
   files: FileMetadata[];
   directories: DirectoryMetadata[];
+  selectDirectory: (directory: DirectoryMetadata) => void;
 }) {
-  const { files, directories } = props;
+  const { files, directories, selectDirectory } = props;
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -89,7 +90,16 @@ export default function FileExplorer(props: {
               key={directory.friendlyName}
               sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
             >
-              <TableCell align="left">{directory.friendlyName}</TableCell>
+              <TableCell align="left">
+                <Button
+                  sx={{ marginTop: 0, marginBottom: 0, textTransform: "none" }}
+                  onClick={() => {
+                    selectDirectory(directory);
+                  }}
+                >
+                  {directory.friendlyName}
+                </Button>
+              </TableCell>
               <TableCell
                 component="th"
                 scope="row"
