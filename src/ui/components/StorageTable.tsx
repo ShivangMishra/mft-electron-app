@@ -13,20 +13,7 @@ import {
   GridRenderCellParams,
   GridValidRowModel,
 } from "@mui/x-data-grid";
-
-enum StorageType {
-  S3 = 0,
-  SCP = 1,
-  FTP = 2,
-  LOCAL = 3,
-  BOX = 4,
-  DROPBOX = 5,
-  GCS = 6,
-  AZURE = 7,
-  SWIFT = 8,
-  ODATA = 9,
-  HTTP = 10,
-}
+import { StorageType } from "../App";
 
 export default function StorageTable(props: {
   storageList: StorageEntry[];
@@ -38,7 +25,7 @@ export default function StorageTable(props: {
     {
       field: "storageName",
       headerName: "Storage Name",
-      width: 150,
+      width: 300,
       renderCell: (params: GridRenderCellParams<any, string>) => (
         <Button
           sx={{ marginTop: 0, marginBottom: 0, textTransform: "none" }}
@@ -52,11 +39,14 @@ export default function StorageTable(props: {
         </Button>
       ),
     },
-    { field: "storageType", headerName: "Storage Type", width: 130,
-    valueGetter: (value) => {
-        return StorageType[value as StorageType];
-      }
-  },
+    {
+      field: "storageType",
+      headerName: "Storage Type",
+      width: 200,
+      valueGetter: (value) => {
+        return StorageType[value];
+      },
+    },
     { field: "storageId", headerName: "Storage ID", width: 300 },
   ];
   return (
@@ -71,10 +61,10 @@ export default function StorageTable(props: {
           },
         }}
         onRowSelectionModelChange={(selection: GridValidRowModel) => {
-            const selectedStorages = storageList.filter((storage) =>
-              selection.includes(storage.storageId)
-            )
-            selectStorages(selectedStorages);
+          const selectedStorages = storageList.filter((storage) =>
+            selection.includes(storage.storageId)
+          );
+          selectStorages(selectedStorages);
         }}
         pageSizeOptions={[5, 10]}
         checkboxSelection

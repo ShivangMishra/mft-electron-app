@@ -16,8 +16,7 @@ import {
   TableRow,
 } from "@mui/material";
 import { Folder, Description } from "@mui/icons-material";
-import { DirectoryMetadata, FileMetadata } from "src/grpc/mftAgentStubs";
-import { StorageType } from "src/grpc/common/storageCommon";
+import { DirectoryMetadata, FileMetadata } from "../../grpc/mftAgentStubs";
 import { timestampToLocalDateString } from "../../utils/dateUtil";
 
 // Sample data for directories and files

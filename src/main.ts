@@ -1,7 +1,7 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'path';
 import { listStoragesRpc, removeSecretForStorage } from './grpc/common/storageCommon';
-import { lsStorage } from './grpc/storage';
+import { addAwsS3Storage, fetchAwsS3BucketList, lsStorage } from './grpc/storage';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -11,8 +11,8 @@ if (require('electron-squirrel-startup')) {
 const createWindow = () => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1024,
+    height: 768,
     autoHideMenuBar: true,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
@@ -54,6 +54,36 @@ app.on('ready', () => {
     storageId, resourcePath
   }) => {
     const response = (await removeSecretForStorage(storageId)).toObject();
+    return response;
+  });
+
+  ipcMain.handle("fetchAwsS3BucketList:request", async (event, {
+    accessKey,
+    secretKey,
+    region,
+  }) => {
+    const response = (await fetchAwsS3BucketList({
+      accessKey,
+      secretKey,
+      region,
+    }
+    )).toObject();
+    return response;
+  });
+  ipcMain.handle("addAwsS3Storage:request", async (event, {
+    accessKey,
+    secretKey,
+    region,
+    bucketName,
+    storageName,
+  }) => {
+    const response = (await addAwsS3Storage({
+      accessKey,
+      secretKey,
+      region,
+      bucketName,
+      storageName,
+    })).toObject();
     return response;
   });
   app.on("activate", function () {

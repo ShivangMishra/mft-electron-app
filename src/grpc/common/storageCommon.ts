@@ -13,12 +13,12 @@ import SecretForStorageDeleteResponse = org.apache.airavata.mft.resource.stubs.s
 
 import StorageType = org.apache.airavata.mft.resource.stubs.storage.common.StorageType;
 
-const client = new StorageCommonServiceClient('localhost:7003', credentials.createInsecure());
+const storageCommonServiceClient = new StorageCommonServiceClient('localhost:7003', credentials.createInsecure());
 
 const listStoragesRpc = (): Promise<StorageListResponse> => {
     return new Promise((resolve, reject) => {
         const request = new StorageListRequest();
-        client.listStorages(request, (error: ServiceError | null, response: StorageListResponse) => {
+        storageCommonServiceClient.listStorages(request, (error: ServiceError | null, response: StorageListResponse) => {
             if (error) {
                 reject(error);
                 return;
@@ -31,7 +31,7 @@ const listStoragesRpc = (): Promise<StorageListResponse> => {
 const getSecretForStorage = (storageId: string): Promise<SecretForStorage> => {
     return new Promise((resolve, reject) => {
         const request = new SecretForStorageGetRequest({ storageId });
-        client.getSecretForStorage(request, (error: ServiceError | null, response: SecretForStorage) => {
+        storageCommonServiceClient.getSecretForStorage(request, (error: ServiceError | null, response: SecretForStorage) => {
             if (error) {
                 reject(error);
                 return;
@@ -44,7 +44,7 @@ const getSecretForStorage = (storageId: string): Promise<SecretForStorage> => {
 const searchStoragesRpc = (storageName: string): Promise<StorageListResponse> => {
     return new Promise((resolve, reject) => {
         const request = new StorageSearchRequest({ storageName });
-        client.searchStorages(request, (error: ServiceError | null, response: StorageListResponse) => {
+        storageCommonServiceClient.searchStorages(request, (error: ServiceError | null, response: StorageListResponse) => {
             if (error) {
                 reject(error);
                 return;
@@ -57,7 +57,7 @@ const searchStoragesRpc = (storageName: string): Promise<StorageListResponse> =>
 const removeSecretForStorage = (storageId: string): Promise<SecretForStorageDeleteResponse> => {
     return new Promise((resolve, reject) => {
         const request = new SecretForStorageDeleteRequest({ storageId });
-        client.deleteSecretsForStorage(request, (error: ServiceError | null, response: SecretForStorageDeleteResponse) => {
+        storageCommonServiceClient.deleteSecretsForStorage(request, (error: ServiceError | null, response: SecretForStorageDeleteResponse) => {
             if (error) {
                 reject(error);
                 return;
@@ -70,5 +70,5 @@ const removeSecretForStorage = (storageId: string): Promise<SecretForStorageDele
 export {
     listStoragesRpc, searchStoragesRpc, getSecretForStorage, SecretForStorage,
     StorageCommonServiceClient, StorageListRequest, StorageListResponse, StorageSearchRequest,
-    SecretForStorageGetRequest, StorageType, removeSecretForStorage
+    SecretForStorageGetRequest, removeSecretForStorage, StorageType,
 };

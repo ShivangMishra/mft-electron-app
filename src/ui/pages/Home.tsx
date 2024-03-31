@@ -16,9 +16,11 @@ import "@fontsource/roboto/700.css";
 import StorageTable from "../components/StorageTable";
 import SearchBar from "../components/SearchBar";
 import { useNavigate } from "react-router-dom";
+import AddStorageDialog from "../components/AddStorageDialog";
 
 export default function Home(props: {}) {
   const [storageList, setStorageList] = React.useState<StorageEntry[]>([]);
+  const [addStorageDialogOpen, setAddStorageDialogOpen] = React.useState(false);
   const [selectedStorages, setSelectedStorages] = React.useState<
     StorageEntry[]
   >([]);
@@ -30,6 +32,7 @@ export default function Home(props: {}) {
 
   const addStorage = () => {
     console.log("add storage");
+    setAddStorageDialogOpen(true);
   };
 
   const removeSelectedStorages = async () => {
@@ -49,11 +52,17 @@ export default function Home(props: {}) {
   };
 
   return (
-    <Box bgcolor="background.default" width="100%">
+    <Box width="100%" height="100vh">
       <Typography variant="h4" component="h4" marginBottom="0.5rem">
         Storages
       </Typography>
-      <Button onClick={removeSelectedStorages} disabled={selectedStorages.length === 0} variant="contained" startIcon={<Delete />} color="error">
+      <Button
+        onClick={removeSelectedStorages}
+        disabled={selectedStorages.length === 0}
+        variant="contained"
+        startIcon={<Delete />}
+        color="error"
+      >
         Remove
       </Button>
       <Button
@@ -86,6 +95,13 @@ export default function Home(props: {}) {
         openStorage={openStorage}
         selectStorages={(storages) => {
           setSelectedStorages(storages);
+        }}
+      />
+      <AddStorageDialog
+        open={addStorageDialogOpen}
+        onClose={() => {
+          setAddStorageDialogOpen(false);
+          fetchStorages();
         }}
       />
     </Box>
