@@ -21,6 +21,7 @@ import AddStorageDialog from "../components/AddStorageDialog";
 export default function Home(props: {}) {
   const [storageList, setStorageList] = React.useState<StorageEntry[]>([]);
   const [addStorageDialogOpen, setAddStorageDialogOpen] = React.useState(false);
+  const [searchText, setSearchText] = React.useState<string>("");
   const [selectedStorages, setSelectedStorages] = React.useState<
     StorageEntry[]
   >([]);
@@ -42,7 +43,9 @@ export default function Home(props: {}) {
     }
     fetchStorages();
   };
-
+  const handleSearch = (searchText: string) => {
+    setSearchText(searchText);
+  };
   useEffect(() => {
     fetchStorages();
   }, []);
@@ -81,17 +84,23 @@ export default function Home(props: {}) {
         marginTop="0.5rem"
       >
         <Box width="30%">
-          <SearchBar onSearch={(search) => console.log(search)} />
+          <SearchBar onSearch={handleSearch} />
         </Box>
-        <IconButton aria-label="search">
+        <IconButton aria-label="sort">
           <Sort />
         </IconButton>
-        <IconButton aria-label="search">
+        <IconButton aria-label="filter">
           <FilterList />
         </IconButton>
       </Box>
       <StorageTable
-        storageList={storageList}
+        storageList={
+          searchText.length === 0
+            ? storageList
+            : storageList.filter((storage) =>
+                storage.storageName.includes(searchText)
+              )
+        }
         openStorage={openStorage}
         selectStorages={(storages) => {
           setSelectedStorages(storages);
