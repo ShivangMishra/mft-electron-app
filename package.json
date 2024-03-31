@@ -47,6 +47,7 @@
     "@grpc/grpc-js": "^1.10.4",
     "@mui/icons-material": "^5.15.14",
     "@mui/material": "^5.15.14",
+    "@mui/x-data-grid": "^7.1.0",
     "@types/react": "^18.2.73",
     "@types/react-dom": "^18.2.23",
     "electron-squirrel-startup": "^1.0.0",
