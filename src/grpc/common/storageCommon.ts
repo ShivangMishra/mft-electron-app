@@ -8,6 +8,9 @@ import StorageListRequest = org.apache.airavata.mft.resource.stubs.storage.commo
 import StorageSearchRequest = org.apache.airavata.mft.resource.stubs.storage.common.StorageSearchRequest;
 import SecretForStorageGetRequest = org.apache.airavata.mft.resource.stubs.storage.common.SecretForStorageGetRequest;
 import SecretForStorage = org.apache.airavata.mft.resource.stubs.storage.common.SecretForStorage;
+import SecretForStorageDeleteRequest = org.apache.airavata.mft.resource.stubs.storage.common.SecretForStorageDeleteRequest;
+import SecretForStorageDeleteResponse = org.apache.airavata.mft.resource.stubs.storage.common.SecretForStorageDeleteResponse;
+
 import StorageType = org.apache.airavata.mft.resource.stubs.storage.common.StorageType;
 
 const client = new StorageCommonServiceClient('localhost:7003', credentials.createInsecure());
@@ -51,4 +54,21 @@ const searchStoragesRpc = (storageName: string): Promise<StorageListResponse> =>
     });
 }
 
-export { listStoragesRpc, searchStoragesRpc, getSecretForStorage, SecretForStorage, StorageCommonServiceClient, StorageListRequest, StorageListResponse, StorageSearchRequest, SecretForStorageGetRequest, StorageType, };
+const removeSecretForStorage = (storageId: string): Promise<SecretForStorageDeleteResponse> => {
+    return new Promise((resolve, reject) => {
+        const request = new SecretForStorageDeleteRequest({ storageId });
+        client.deleteSecretsForStorage(request, (error: ServiceError | null, response: SecretForStorageDeleteResponse) => {
+            if (error) {
+                reject(error);
+                return;
+            }
+            resolve(response);
+        });
+    });
+}
+
+export {
+    listStoragesRpc, searchStoragesRpc, getSecretForStorage, SecretForStorage,
+    StorageCommonServiceClient, StorageListRequest, StorageListResponse, StorageSearchRequest,
+    SecretForStorageGetRequest, StorageType, removeSecretForStorage
+};

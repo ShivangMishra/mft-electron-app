@@ -1,6 +1,6 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'path';
-import { listStoragesRpc } from './grpc/common/storageCommon';
+import { listStoragesRpc, removeSecretForStorage } from './grpc/common/storageCommon';
 import { lsStorage } from './grpc/storage';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -48,6 +48,13 @@ app.on('ready', () => {
   }) => {
     const lsResponse = (await lsStorage(storageId, resourcePath)).toObject();
     return lsResponse;
+  });
+
+  ipcMain.handle("storageRemove:request", async (event, {
+    storageId, resourcePath
+  }) => {
+    const response = (await removeSecretForStorage(storageId)).toObject();
+    return response;
   });
   app.on("activate", function () {
     // On macOS it's common to re-create a window in the app when the

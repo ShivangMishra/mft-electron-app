@@ -21,6 +21,7 @@ declare global {
     api: {
       listStorages: () => Promise<StorageEntry[]>;
       lsStorage: (storageId: string, resourcePath?: string) => Promise<ResourceMetadata>;
+      removeSecretForStorage: (storageId: string) => Promise<void>;
     };
   }
 }

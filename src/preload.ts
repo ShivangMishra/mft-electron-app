@@ -16,5 +16,8 @@ contextBridge.exposeInMainWorld('api', {
   },
   lsStorage: async (storageId: string, resourcePath?: string) => {
     return await ipcRenderer.invoke("storageLs:request", { storageId, resourcePath });
+  },
+  removeSecretForStorage: async (storageId: string) => {
+    return await ipcRenderer.invoke("storageRemove:request", { storageId });
   }
 });
