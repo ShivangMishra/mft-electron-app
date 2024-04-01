@@ -37,7 +37,9 @@ export default function Home(props: {}) {
       console.error("Failed to fetch storages", error);
       alert(
         error.message +
-        "Failed to fetch storages. Please note: To run this demo app, you must first run the mft server manually."
+        "Failed to fetch storages:" + error + "Please note: This is just a proof of concept. " +
+        "\nSo here might be lots of corner cases that I have not noticed." +
+        "\nWhen you see an error, try restarting the app, and send me an email at shivang978@gmail.com."
       );
       setStorageList([]);
     }
