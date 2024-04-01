@@ -5,6 +5,7 @@ import { lsStorage } from "src/grpc/storage";
 import FileExplorer from "../components/FileExplorer";
 import { Box, Button, IconButton, Paper, Typography } from "@mui/material";
 import { ArrowBack, ArrowForward, Refresh } from "@mui/icons-material";
+import { RotatingLines } from "react-loader-spinner";
 
 export default function LsStorage() {
   const location = useLocation();
@@ -13,14 +14,17 @@ export default function LsStorage() {
   const [resourceMetadataList, setResourceMetadataList] = React.useState<
     ResourceMetadata[]
   >([]);
+  const [loading, setLoading] = React.useState<boolean>(true);
 
-  //   const [storageId, setStorageId] = React.useState<string>("");
   const [storage, setStorage] = React.useState<StorageEntry>();
 
   const loadStorage = async (storage: StorageEntry) => {
+    setLoading(true);
     const lsResponse = await window.api.lsStorage(storage.storageId);
     setStorage(storage);
+    setCurrentIdx(0);
     setResourceMetadataList([lsResponse]);
+    setLoading(false);
   };
 
   const selectDirectory = async (directory: DirectoryMetadata) => {
@@ -33,6 +37,7 @@ export default function LsStorage() {
       setCurrentIdx(currentIdx + 1);
       return;
     }
+    setLoading(true);
     const lsResponse = await window.api.lsStorage(
       storage.storageId,
       directory.resourcePath
@@ -41,6 +46,7 @@ export default function LsStorage() {
     lsResponse.directory.resourcePath = directory.resourcePath;
     setResourceMetadataList([...resourceMetadataList, lsResponse]);
     setCurrentIdx(currentIdx + 1);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -50,6 +56,9 @@ export default function LsStorage() {
 
   return (
     <Box sx={{padding: "1rem"}}>
+       <Box sx={{ position: "absolute", width: "100%", height: "100%", bgcolor: "", display: "flex", justifyContent: "center", alignItems: "center", left: 0, top: 0 }}>
+        <RotatingLines strokeColor="blue" visible={loading} />
+      </Box>
       <Paper>
       <Box>
         <IconButton
