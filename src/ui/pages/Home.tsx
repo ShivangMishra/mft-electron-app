@@ -17,11 +17,13 @@ import StorageTable from "../components/StorageTable";
 import SearchBar from "../components/SearchBar";
 import { useNavigate } from "react-router-dom";
 import AddStorageDialog from "../components/AddStorageDialog";
+import { RotatingLines } from "react-loader-spinner";
 
 export default function Home(props: {}) {
   const [storageList, setStorageList] = React.useState<StorageEntry[]>([]);
   const [addStorageDialogOpen, setAddStorageDialogOpen] = React.useState(false);
   const [searchText, setSearchText] = React.useState<string>("");
+  const [loading, setLoading] = React.useState<boolean>(true);
   const [selectedStorages, setSelectedStorages] = React.useState<
     StorageEntry[]
   >([]);
@@ -30,11 +32,12 @@ export default function Home(props: {}) {
     try {
       const storageList = await window.api.listStorages();
       setStorageList(storageList);
+      setLoading(false);
     } catch (error) {
       console.error("Failed to fetch storages", error);
       alert(
         error.message +
-          "Failed to fetch storages. Please note: To run this demo app, you must first run the mft server manually."
+        "Failed to fetch storages. Please note: To run this demo app, you must first run the mft server manually."
       );
       setStorageList([]);
     }
@@ -58,13 +61,16 @@ export default function Home(props: {}) {
   useEffect(() => {
     fetchStorages();
   }, []);
-  
+
   const openStorage = async (storage: StorageEntry) => {
     navigate("/storage", { state: { storage } });
   };
 
   return (
     <Box width="100%" height="100vh" padding="0.5rem">
+      <Box sx={{ position: "absolute", width: "100vw", height: "100vh", bgcolor: "", display: "flex", justifyContent: "center", alignItems: "center" }}>
+        <RotatingLines strokeColor="blue" visible={loading} />
+      </Box>
       <Typography variant="h4" component="h4" marginBottom="1rem">
         Storages
       </Typography>
@@ -107,8 +113,8 @@ export default function Home(props: {}) {
           searchText.length === 0
             ? storageList
             : storageList.filter((storage) =>
-                storage.storageName.includes(searchText)
-              )
+              storage.storageName.includes(searchText)
+            )
         }
         openStorage={openStorage}
         selectStorages={(storages) => {
