@@ -72,6 +72,16 @@ export default function AddStorageDialog(props: AddStorageDialogProps) {
   };
 
   const handleAddS3Storage = async () => {
+    if (
+      accessKey.length === 0 ||
+      secretKey.length === 0 ||
+      awsRegion.length === 0 ||
+      bucket.length === 0 ||
+      storageName.length === 0
+    ) {
+      alert("All fields except Session Token are mandatory. Please fill them out.");
+      return;
+    }
     const response = await window.api.addAwsS3Storage({
       accessKey,
       secretKey,
@@ -89,18 +99,28 @@ export default function AddStorageDialog(props: AddStorageDialogProps) {
         console.log("S3");
         handleAddS3Storage();
         break;
+      default:
+        alert(
+          "Currently in this demo app, " +
+            storageType +
+            " is not supported. Please try for S3 instead."
+        );
     }
   };
 
   const fetchAwsS3BucketList = async () => {
-    const response = await window.api.fetchAwsS3BucketList({
-      accessKey,
-      secretKey,
-      region: awsRegion,
-    });
-    setBucketList(
-      response.directory.directories.map((dir) => dir.friendlyName)
-    );
+    try {
+      const response = await window.api.fetchAwsS3BucketList({
+        accessKey,
+        secretKey,
+        region: awsRegion,
+      });
+      setBucketList(
+        response.directory.directories.map((dir) => dir.friendlyName)
+      );
+    } catch (error) {
+      alert("Error fetching bucket list: " + JSON.stringify(error));
+    }
   };
 
   useEffect(() => {
@@ -172,7 +192,7 @@ export default function AddStorageDialog(props: AddStorageDialogProps) {
                 variant="outlined"
                 margin="normal"
                 onChange={(event) => {
-                  setAccessKey(event.target.value);
+                  setAccessKey((event.target.value as string).trim());
                 }}
               />
               <TextField
@@ -181,7 +201,7 @@ export default function AddStorageDialog(props: AddStorageDialogProps) {
                 variant="outlined"
                 margin="normal"
                 onChange={(event) => {
-                  setSecretKey(event.target.value);
+                  setSecretKey((event.target.value as string).trim());
                 }}
               />
               <TextField
@@ -190,7 +210,7 @@ export default function AddStorageDialog(props: AddStorageDialogProps) {
                 variant="outlined"
                 margin="normal"
                 onChange={(event) => {
-                  setSessionToken(event.target.value);
+                  setSessionToken((event.target.value as string).trim());
                 }}
               />
               <FormControl
