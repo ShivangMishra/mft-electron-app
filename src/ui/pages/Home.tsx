@@ -1,9 +1,7 @@
 import {
   Add,
-  Create,
   Delete,
   FilterList,
-  PlusOne,
   Sort,
 } from "@mui/icons-material";
 import { Box, Button, IconButton, Typography } from "@mui/material";
@@ -19,7 +17,7 @@ import { useNavigate } from "react-router-dom";
 import AddStorageDialog from "../components/AddStorageDialog";
 import { RotatingLines } from "react-loader-spinner";
 
-export default function Home(props: {}) {
+export default function Home() {
   const [storageList, setStorageList] = React.useState<StorageEntry[]>([]);
   const [addStorageDialogOpen, setAddStorageDialogOpen] = React.useState(false);
   const [searchText, setSearchText] = React.useState<string>("");
@@ -68,7 +66,7 @@ export default function Home(props: {}) {
 
   return (
     <Box width="100%" height="100vh" padding="0.5rem">
-      <Box sx={{ position: "absolute", width: "100vw", height: "100vh", bgcolor: "", display: "flex", justifyContent: "center", alignItems: "center" }}>
+      <Box sx={{ position: "absolute", height: "100vh", bgcolor: "", display: "flex", justifyContent: "center", alignItems: "center" }}>
         <RotatingLines strokeColor="blue" visible={loading} />
       </Box>
       <Typography variant="h4" component="h4" marginBottom="1rem">
