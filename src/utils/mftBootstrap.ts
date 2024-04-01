@@ -200,8 +200,22 @@ function execCommand(command: string): Promise<void> {
   });
 }
 
-async function startMFT() {
+const isMftRunning = (): boolean => {
+  const mftDir = path.join(os.homedir(), ".mft");
+  const consulPidPath = path.join(mftDir, "consul.pid");
+  const mftPidPath = path.join(mftDir, "Standalone-Service-0.01", "bin", "service-pid");
+
+  return fs.existsSync(consulPidPath) && fs.existsSync(mftPidPath);
+}
+
+async function startMFT(restart=false) {
   console.debug("Setting up MFT Services...");
+
+  if (!restart && isMftRunning()) {
+    console.debug("MFT services are already running");
+    return;
+  }
+
   const requiredJavaVersion = 11;
   let consulUrl: string;
   switch (platform as string) {
