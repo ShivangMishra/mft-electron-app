@@ -276,14 +276,14 @@ async function startMFT() {
   } catch (err) {
     console.error("Failed to open port:", err);
   }
-  await restartService(
-    path.join(mftPath, "bin"),
-    "standalone-service-daemon.sh"
-  );
 
   let mftRunning = false;
   while (!mftRunning) {
     try {
+      await restartService(
+        path.join(mftPath, "bin"),
+        "standalone-service-daemon.sh"
+      );
       await waitUntilPortIsOpen(7003);
       console.debug("MFT service started");
       mftRunning = true;
