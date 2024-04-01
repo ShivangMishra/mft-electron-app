@@ -2,6 +2,8 @@ import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'path';
 import { listStoragesRpc, removeSecretForStorage } from './grpc/common/storageCommon';
 import { addAwsS3Storage, fetchAwsS3BucketList, lsStorage } from './grpc/storage';
+import { startMFT } from './utils/mftBootstrap';
+import { exec } from 'child_process';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -39,6 +41,7 @@ const createWindow = () => {
 app.on('ready', () => {
   createWindow();
   ipcMain.handle("storageList:request", async (event) => {
+    await startMFT();
     return new Promise((resolve, reject) => {
       listStoragesRpc()
         .then((response) => {
@@ -115,3 +118,4 @@ app.on('activate', () => {
     createWindow();
   }
 });
+
