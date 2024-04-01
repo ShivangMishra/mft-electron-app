@@ -166,46 +166,30 @@ async function stopService(
 
 function execCommand(command: string): Promise<void> {
   return new Promise<void>((resolve, reject) => {
-    exec(command, (error, stdout, stderr) => {
-      if (error) {
-        reject(error);
+    const parts = command.split(' ');
+    const child = spawn(parts[0], parts.slice(1));
+
+    child.on('error', (err) => {
+      reject(err);
+    });
+
+    child.on('exit', (code, signal) => {
+      if (code !== 0) {
+        reject(new Error(`Command ${command} exited with code ${code}`));
         return;
       }
-      if (stderr) {
-        reject(new Error(stderr));
+      if (signal) {
+        reject(new Error(`Command ${command} was terminated by signal ${signal}`));
         return;
       }
       resolve();
     });
   });
 }
-async function isServiceRunning(daemonScriptName: string): Promise<boolean> {
-  return new Promise<boolean>((resolve, reject) => {
-    exec(`pgrep -f ${daemonScriptName}`, (error, stdout) => {
-      if (error && error.code !== 1) {
-        // Ignore error if pgrep returns 1 (no process found)
-        reject(error);
-        return;
-      }
-      resolve(stdout.trim() !== "");
-    });
-  });
-}
-async function startMFT(restart = false) {
-  console.debug("Setting up MFT Services...");
-  let isMftRunning = false;
-  try {
-    isMftRunning = await isServiceRunning("standalone-service-daemon.sh");
-    console.debug("MFT is running:", isMftRunning);
-  } catch (err) {
-    console.error("Failed to check if MFT is running:", err);
-  }
-  if (!restart && isMftRunning) {
-    console.debug("MFT is already running");
-    return;
-  }
-  const requiredJavaVersion = 11;
 
+async function startMFT() {
+  console.debug("Setting up MFT Services...");
+  const requiredJavaVersion = 11;
   let consulUrl: string;
   switch (platform as string) {
     case "linux":
