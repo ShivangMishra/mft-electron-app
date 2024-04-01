@@ -30,8 +30,6 @@ export default function StorageTable(props: {
         <Button
           sx={{ marginTop: 0, marginBottom: 0, textTransform: "none" }}
           onClick={() => {
-            console.log("params", params);
-            console.log(params.value);
             openStorage(params.row as StorageEntry);
           }}
         >

@@ -46,12 +46,10 @@ export default function Home(props: {}) {
   };
 
   const addStorage = () => {
-    console.log("add storage");
     setAddStorageDialogOpen(true);
   };
 
   const removeSelectedStorages = async () => {
-    console.log("selectedStorages", selectedStorages);
     for (const storage of selectedStorages) {
       await window.api.removeSecretForStorage(storage.storageId);
     }

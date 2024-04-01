@@ -90,13 +90,13 @@ export default function AddStorageDialog(props: AddStorageDialogProps) {
       bucketName: bucket,
       storageName,
     });
-    console.log("Add S3 Storage", JSON.stringify(response));
+    console.debug("Add S3 Storage", JSON.stringify(response));
     handleClose();
   };
   const handleAddStorage = () => {
     switch (storageType) {
       case "S3":
-        console.log("S3");
+        console.debug("S3");
         handleAddS3Storage();
         break;
       default:
@@ -141,7 +141,6 @@ export default function AddStorageDialog(props: AddStorageDialogProps) {
             padding: "0.5rem",
             border: `1px solid #808080`,
             // backgroundColor: "#f5f5f5",
-            backgroundColor: "green",
             borderRadius: "5px",
           }}
           autoComplete="off"
@@ -222,7 +221,6 @@ export default function AddStorageDialog(props: AddStorageDialogProps) {
                   flexDirection: "row",
                   justifyContent: "space-between",
                   alignItems: "center",
-                  backgroundColor: "red",
                 }}
               >
                 <Typography variant="body1" component="b">
