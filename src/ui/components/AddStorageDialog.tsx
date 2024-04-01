@@ -130,17 +130,18 @@ export default function AddStorageDialog(props: AddStorageDialogProps) {
   }, [awsRegion]);
   return (
     <Dialog onClose={handleClose} open={open}>
-      <Box bgcolor="background.default" width="50vw" padding="2rem">
+      <Box bgcolor="background.default" width="100%" padding="1rem">
         <form
           style={{
             display: "flex",
             flexDirection: "column",
-            maxWidth: 400,
+            // maxWidth: 400,
             // height: "80vh",
             margin: "0 auto",
-            padding: "1rem",
+            padding: "0.5rem",
             border: `1px solid #808080`,
-            backgroundColor: "#f5f5f5",
+            // backgroundColor: "#f5f5f5",
+            backgroundColor: "green",
             borderRadius: "5px",
           }}
           autoComplete="off"
@@ -217,11 +218,11 @@ export default function AddStorageDialog(props: AddStorageDialogProps) {
                 component="fieldset"
                 sx={{
                   margin: "0.5rem",
-                  minWidth: 120,
                   display: "flex",
                   flexDirection: "row",
                   justifyContent: "space-between",
                   alignItems: "center",
+                  backgroundColor: "red",
                 }}
               >
                 <Typography variant="body1" component="b">

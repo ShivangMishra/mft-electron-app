@@ -49,7 +49,8 @@ export default function LsStorage() {
   }, []);
 
   return (
-    <Paper>
+    <Box sx={{padding: "1rem"}}>
+      <Paper>
       <Box>
         <IconButton
           onClick={() => {
@@ -77,6 +78,7 @@ export default function LsStorage() {
             flexDirection: "row",
             justifyContent: "space-between",
             alignItems: "center",
+            padding: "0.5rem",
           }}
         >
           <Typography variant="h5" component="h5" marginBottom="0.5rem">
@@ -96,5 +98,6 @@ export default function LsStorage() {
         />
       )}
     </Paper>
+    </Box>
   );
 }

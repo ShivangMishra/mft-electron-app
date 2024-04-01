@@ -64,8 +64,8 @@ export default function Home(props: {}) {
   };
 
   return (
-    <Box width="100%" height="100vh">
-      <Typography variant="h4" component="h4" marginBottom="0.5rem">
+    <Box width="100%" height="100vh" padding="0.5rem">
+      <Typography variant="h4" component="h4" marginBottom="1rem">
         Storages
       </Typography>
       <Button
