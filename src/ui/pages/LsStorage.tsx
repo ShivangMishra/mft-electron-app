@@ -3,8 +3,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { DirectoryMetadata, ResourceMetadata } from "src/grpc/mftAgentStubs";
 import { lsStorage } from "src/grpc/storage";
 import FileExplorer from "../components/FileExplorer";
-import { Box, IconButton, Paper, Typography } from "@mui/material";
-import { ArrowBack, ArrowForward } from "@mui/icons-material";
+import { Box, Button, IconButton, Paper, Typography } from "@mui/material";
+import { ArrowBack, ArrowForward, Refresh } from "@mui/icons-material";
 
 export default function LsStorage() {
   const location = useLocation();
@@ -19,7 +19,6 @@ export default function LsStorage() {
 
   const loadStorage = async (storage: StorageEntry) => {
     const lsResponse = await window.api.lsStorage(storage.storageId);
-    const files = lsResponse.directory.files;
     setStorage(storage);
     setResourceMetadataList([lsResponse]);
   };
@@ -72,10 +71,22 @@ export default function LsStorage() {
         >
           <ArrowForward />
         </IconButton>
-        <Typography variant="h4" component="h4" marginBottom="0.5rem">
-          {storage?.storageName || location.state.storage.storageName}/
-          {resourceMetadataList[currentIdx]?.directory.resourcePath}
-        </Typography>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <Typography variant="h5" component="h5" marginBottom="0.5rem">
+            {storage?.storageName || location.state.storage.storageName}/
+            {resourceMetadataList[currentIdx]?.directory.resourcePath}
+          </Typography>
+          <Button onClick={()=>loadStorage(storage)} startIcon={<Refresh/>}>
+            Refresh Storage
+          </Button>
+        </Box>
       </Box>
       {resourceMetadataList[currentIdx]?.directory && (
         <FileExplorer
