@@ -27,8 +27,17 @@ export default function Home(props: {}) {
   >([]);
   const navigate = useNavigate();
   const fetchStorages = async () => {
-    const storageList = await window.api.listStorages();
-    setStorageList(storageList);
+    try {
+      const storageList = await window.api.listStorages();
+      setStorageList(storageList);
+    } catch (error) {
+      console.error("Failed to fetch storages", error);
+      alert(
+        error.message +
+          "Failed to fetch storages. Please note: To run this demo app, you must first run the mft server manually."
+      );
+      setStorageList([]);
+    }
   };
 
   const addStorage = () => {
@@ -49,7 +58,7 @@ export default function Home(props: {}) {
   useEffect(() => {
     fetchStorages();
   }, []);
-
+  
   const openStorage = async (storage: StorageEntry) => {
     navigate("/storage", { state: { storage } });
   };

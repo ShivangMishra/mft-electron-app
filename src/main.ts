@@ -39,9 +39,15 @@ const createWindow = () => {
 app.on('ready', () => {
   createWindow();
   ipcMain.handle("storageList:request", async (event) => {
-    const listStoragesResponse = (await listStoragesRpc()).toObject();
-    const storageList = listStoragesResponse.storageList;
-    return storageList;
+    return new Promise((resolve, reject) => {
+      listStoragesRpc()
+        .then((response) => {
+          resolve(response.toObject().storageList);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
   });
   ipcMain.handle("storageLs:request", async (event, {
     storageId, resourcePath
