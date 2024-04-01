@@ -42,7 +42,7 @@ async function validateJavaAvailability(
       process.exit(1);
     }
   } catch (error) {
-    console.log("error", error);
+    console.debug("error", error);
     console.error(
       "Java is either not installed or the path is not set properly"
     );
@@ -53,34 +53,34 @@ async function validateJavaAvailability(
 async function downloadAndUnarchive(
   url: string,
   downloadPath: string,
-  extractDir: string = path.join(require('os').homedir(), '.mft/')
+  extractDir: string = path.join(require("os").homedir(), ".mft/")
 ): Promise<void> {
-  const response = await axios.get(url, { responseType: 'stream' });
-  const fileSize = Number(response.headers['content-length']);
+  const response = await axios.get(url, { responseType: "stream" });
+  const fileSize = Number(response.headers["content-length"]);
 
   let downloadedSize = 0;
   const progress = setInterval(() => {
-      console.log(`Download progress: ${downloadedSize} / ${fileSize}`);
+    console.debug(`Download progress: ${downloadedSize} / ${fileSize}`);
   }, 1000);
 
   await new Promise<void>((resolve, reject) => {
-      const fileStream = fs.createWriteStream(downloadPath);
-      response.data.pipe(fileStream);
-      response.data.on('data', (chunk: Buffer) => {
-          downloadedSize += chunk.length;
-      });
-      fileStream.on('finish', () => {
-          clearInterval(progress);
-          console.log('Download completed');
-          resolve();
-      });
-      fileStream.on('error', (err: Error) => {
-          clearInterval(progress);
-          reject(err);
-      });
+    const fileStream = fs.createWriteStream(downloadPath);
+    response.data.pipe(fileStream);
+    response.data.on("data", (chunk: Buffer) => {
+      downloadedSize += chunk.length;
+    });
+    fileStream.on("finish", () => {
+      clearInterval(progress);
+      console.debug("Download completed");
+      resolve();
+    });
+    fileStream.on("error", (err: Error) => {
+      clearInterval(progress);
+      reject(err);
+    });
   });
 
-  console.log('Unarchiving ...');
+  console.debug("Unarchiving ...");
   const zip = new AdmZip(downloadPath);
   zip.extractAllTo(extractDir, true);
   fs.unlinkSync(downloadPath);
@@ -100,18 +100,18 @@ async function waitUntilPortIsOpen(
       const socket = new net.Socket();
       socket.on("connect", () => {
         socket.destroy();
+        console.debug(`Connected to ${host}:${port}`);
         resolve();
       });
       socket.on("error", (err) => {
         if (retries < maxRetries) {
+          console.debug(`Trying to connect to ${host}:${port}...`);
           retries++;
           setTimeout(tryConnect, retryInterval);
         } else {
           socket.destroy();
           reject(
-            new Error(
-              `Failed to connect after ${maxRetries} attempts: ${err.message}`
-            )
+            `Failed to connect after ${maxRetries} attempts ${err.message}`
           );
         }
       });
@@ -131,8 +131,20 @@ async function restartService(
   try {
     process.chdir(binPath);
     fs.chmodSync(daemonScriptName, 0o744);
-    await execCommand(`./${daemonScriptName} stop`);
+    try {
+      console.debug(`Stopping service ${daemonScriptName}`);
+      await execCommand(`./${daemonScriptName} stop`);
+    } catch (error) {
+      console.error(
+        `Failed to stop service ${daemonScriptName}: ${error.message}`
+      );
+    }
+    console.debug(`Starting service ${daemonScriptName}`);
     await execCommand(`./${daemonScriptName} start`);
+  } catch (error) {
+    console.error(
+      `Failed to restart service ${daemonScriptName}: ${error.message}`
+    );
   } finally {
     process.chdir(currentDir);
   }
@@ -180,8 +192,18 @@ async function isServiceRunning(daemonScriptName: string): Promise<boolean> {
   });
 }
 async function startMFT(restart = false) {
-  console.log("Setting up MFT Services");
-
+  console.debug("Setting up MFT Services...");
+  let isMftRunning = false;
+  try {
+    isMftRunning = await isServiceRunning("standalone-service-daemon.sh");
+    console.debug("MFT is running:", isMftRunning);
+  } catch (err) {
+    console.error("Failed to check if MFT is running:", err);
+  }
+  if (!restart && isMftRunning) {
+    console.debug("MFT is already running");
+    return;
+  }
   const requiredJavaVersion = 11;
 
   let consulUrl: string;
@@ -198,10 +220,10 @@ async function startMFT(restart = false) {
       await validateJavaAvailability(requiredJavaVersion);
       break;
     case "win32":
-      console.log("Windows support is not available yet");
+      console.debug("Windows support is not available yet");
       process.exit();
     default:
-      console.log("Unsupported platform: " + platform);
+      console.debug("Unsupported platform: " + platform);
       process.exit();
   }
 
@@ -212,7 +234,7 @@ async function startMFT(restart = false) {
 
   const consulPath = path.join(mftDir, "consul");
   if (!fs.existsSync(consulPath)) {
-    console.log("Downloading Consul...");
+    console.debug("Downloading Consul...");
     const zipPath = path.join(mftDir, "consul.zip");
     await downloadAndUnarchive(consulUrl, zipPath, mftDir);
   }
@@ -236,7 +258,7 @@ async function startMFT(restart = false) {
       ],
     });
 
-    console.log("Consul process id: " + consulProcess.pid);
+    console.debug("Consul process id: " + consulProcess.pid);
     fs.writeFileSync("consul.pid", consulProcess.pid.toString());
   } finally {
     process.chdir(currentDir);
@@ -246,30 +268,29 @@ async function startMFT(restart = false) {
   if (!fs.existsSync(mftPath)) {
     const url =
       "https://github.com/apache/airavata-mft/releases/download/v0.0.1/Standalone-Service-0.01-bin.zip";
-    console.log("Downloading MFT Server...");
+    console.debug("Downloading MFT Server...");
     const zipPath = path.join(mftDir, "Standalone-Service-0.01-bin.zip");
     await downloadAndUnarchive(url, zipPath, mftDir);
   }
 
   try {
     await waitUntilPortIsOpen(8500);
-    console.log("Port is open");
+    console.debug("Consul Port is open");
   } catch (err) {
     console.error("Failed to open port:", err);
   }
-
-  if (!restart && (await isServiceRunning("standalone-service-daemon.sh"))) {
-    console.log("MFT is already running");
-    return;
-  }
-  restartService(path.join(mftPath, "bin"), "standalone-service-daemon.sh");
+  await restartService(
+    path.join(mftPath, "bin"),
+    "standalone-service-daemon.sh"
+  );
   try {
     await waitUntilPortIsOpen(7003);
-    console.log("Port is open");
+    console.debug("MFT service is running");
   } catch (err) {
-    console.error("Failed to open port:", err);
+    console.error("MFT service not running:", err);
+    throw new Error("MFT service not running");
   }
-  console.log("MFT Started");
+  console.debug("MFT Started");
 }
 
 export { startMFT };

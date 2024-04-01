@@ -41,7 +41,15 @@ const createWindow = () => {
 app.on('ready', () => {
   createWindow();
   ipcMain.handle("storageList:request", async (event) => {
-    await startMFT();
+    try {
+      await startMFT();
+    } catch (error) {
+      console.error("Failed to start MFT", error.message, "\nExiting...");
+      app.quit();
+      return new Promise((resolve, reject) => {
+        reject(error.message);
+      });
+    }
     return new Promise((resolve, reject) => {
       listStoragesRpc()
         .then((response) => {
