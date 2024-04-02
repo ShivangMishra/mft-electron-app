@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 import FormControl from "@mui/material/FormControl";
 import { fetchAwsS3BucketList } from "src/grpc/storage";
+import { RotatingLines } from "react-loader-spinner";
 
 const awsRegions = [
   "us-east-2",
@@ -66,7 +67,7 @@ export default function AddStorageDialog(props: AddStorageDialogProps) {
   const [secretKey, setSecretKey] = useState<string>("");
   const [sessionToken, setSessionToken] = useState<string>("");
   const [storageName, setStorageName] = useState<string>("Default Name");
-
+  const [loading, setLoading] = useState<boolean>(false);
   const handleClose = () => {
     onClose();
   };
@@ -110,6 +111,7 @@ export default function AddStorageDialog(props: AddStorageDialogProps) {
 
   const fetchAwsS3BucketList = async () => {
     try {
+      setLoading(true);
       const response = await window.api.fetchAwsS3BucketList({
         accessKey,
         secretKey,
@@ -120,6 +122,8 @@ export default function AddStorageDialog(props: AddStorageDialogProps) {
       );
     } catch (error) {
       alert("Error fetching bucket list: " + JSON.stringify(error));
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -131,6 +135,9 @@ export default function AddStorageDialog(props: AddStorageDialogProps) {
   return (
     <Dialog onClose={handleClose} open={open}>
       <Box bgcolor="background.default" width="100%" padding="1rem">
+      <Box sx={{ position: "absolute", height: "100vh", bgcolor: "", display: "flex", justifyContent: "center", alignItems: "center" }}>
+        <RotatingLines strokeColor="blue" visible={loading} />
+      </Box>
         <form
           style={{
             display: "flex",
