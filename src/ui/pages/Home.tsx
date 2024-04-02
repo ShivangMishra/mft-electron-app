@@ -2,6 +2,7 @@ import {
   Add,
   Delete,
   FilterList,
+  Refresh,
   Sort,
 } from "@mui/icons-material";
 import { Box, Button, IconButton, Typography } from "@mui/material";
@@ -29,6 +30,7 @@ export default function Home() {
   const fetchStorages = async () => {
     try {
       const storageList = await window.api.listStorages();
+      console.debug("Fetched storages", storageList);
       setStorageList(storageList);
       setLoading(false);
     } catch (error) {
@@ -66,29 +68,36 @@ export default function Home() {
 
   return (
     <Box width="100%" height="100vh" padding="0.5rem">
-      <Box sx={{ position: "absolute", height: "100vh", bgcolor: "", display: "flex", justifyContent: "center", alignItems: "center" }}>
+      <Box sx={{ position: "absolute", height: "100vh", bgcolor: "", display: "flex", justifyContent: "center", alignItems: "center", left: 0, top: 0 }}>
         <RotatingLines strokeColor="blue" visible={loading} />
       </Box>
-      <Typography variant="h4" component="h4" marginBottom="1rem">
+      <Typography variant="h4" component="h4" marginBottom="0.5rem">
         Storages
       </Typography>
-      <Button
-        onClick={removeSelectedStorages}
-        disabled={selectedStorages.length === 0}
-        variant="contained"
-        startIcon={<Delete />}
-        color="error"
-      >
-        Remove
-      </Button>
-      <Button
-        variant="contained"
-        startIcon={<Add />}
-        sx={{ marginLeft: "0.5rem" }}
-        onClick={addStorage}
-      >
-        Add Storage
-      </Button>
+      <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+        <Box>
+          <Button
+            onClick={removeSelectedStorages}
+            disabled={selectedStorages.length === 0}
+            variant="contained"
+            startIcon={<Delete />}
+            color="error"
+          >
+            Remove
+          </Button>
+          <Button
+            variant="contained"
+            startIcon={<Add />}
+            sx={{ marginLeft: "0.5rem" }}
+            onClick={addStorage}
+          >
+            Add Storage
+          </Button>
+        </Box>
+        <Button startIcon={<Refresh />} onClick={fetchStorages}>
+          Reload
+        </Button>
+      </Box>
       <Box
         display="flex"
         width="80%"
