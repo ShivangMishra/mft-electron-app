@@ -240,12 +240,24 @@ const isMftRunning = async () => {
     "bin",
     "service-pid"
   );
-
+  const isMftRunning = await new Promise((resolve, reject) => {
+    exec(
+      'pgrep -f "Standalone-*" | xargs ps -o comm -p',
+      (error, stdout, stderr) => {
+        if (error) {
+          reject(error);
+          return;
+        }
+        if (stderr) {
+          reject(new Error(stderr));
+          return;
+        }
+        resolve(stdout.trim().length > 0);
+      }
+    );
+  });
   return (
-    fs.existsSync(consulPidPath) &&
-    fs.existsSync(mftPidPath) &&
-    (await isPortOpen(8500)) &&
-    (await isPortOpen(7003))
+    fs.existsSync(consulPidPath) && fs.existsSync(mftPidPath) && isMftRunning && (await isPortOpen(8500))
   );
 };
 
