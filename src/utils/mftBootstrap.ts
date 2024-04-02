@@ -10,19 +10,19 @@ import * as net from "net";
 
 function javaversion(): Promise<string> {
   return new Promise((resolve, reject) => {
-    const child = spawn('java', ['-version']);
+    const child = spawn("java", ["-version"]);
 
-    let stderr = '';
+    let stderr = "";
 
-    child.stderr.on('data', (data) => {
+    child.stderr.on("data", (data) => {
       stderr += data.toString();
     });
 
-    child.on('error', (error) => {
+    child.on("error", (error) => {
       reject(error);
     });
 
-    child.on('close', (code) => {
+    child.on("close", (code) => {
       if (code !== 0) {
         reject(new Error(`Command 'java -version' exited with code ${code}`));
         return;
@@ -32,12 +32,11 @@ function javaversion(): Promise<string> {
       if (javaVersion && javaVersion.length > 1) {
         resolve(javaVersion[1]);
       } else {
-        reject('Java is not installed');
+        reject("Java is not installed");
       }
     });
   });
 }
-
 
 async function validateJavaAvailability(
   requiredVersion: number
@@ -179,20 +178,22 @@ async function stopService(
 
 function execCommand(command: string): Promise<void> {
   return new Promise<void>((resolve, reject) => {
-    const parts = command.split(' ');
+    const parts = command.split(" ");
     const child = spawn(parts[0], parts.slice(1));
 
-    child.on('error', (err) => {
+    child.on("error", (err) => {
       reject(err);
     });
 
-    child.on('exit', (code, signal) => {
+    child.on("exit", (code, signal) => {
       if (code !== 0) {
         reject(new Error(`Command ${command} exited with code ${code}`));
         return;
       }
       if (signal) {
-        reject(new Error(`Command ${command} was terminated by signal ${signal}`));
+        reject(
+          new Error(`Command ${command} was terminated by signal ${signal}`)
+        );
         return;
       }
       resolve();
@@ -200,18 +201,58 @@ function execCommand(command: string): Promise<void> {
   });
 }
 
-const isMftRunning = (): boolean => {
-  const mftDir = path.join(os.homedir(), ".mft");
-  const consulPidPath = path.join(mftDir, "consul.pid");
-  const mftPidPath = path.join(mftDir, "Standalone-Service-0.01", "bin", "service-pid");
+function isPortOpen(port: number, host = "localhost") {
+  return new Promise((resolve, reject) => {
+    const socket = new net.Socket();
+    socket.setTimeout(2000); // 2 seconds timeout
 
-  return fs.existsSync(consulPidPath) && fs.existsSync(mftPidPath);
+    socket.on("connect", () => {
+      socket.destroy(); // close the connection
+      console.debug(`Port ${port} is open`);
+      resolve(true);
+    });
+
+    socket.on("timeout", () => {
+      socket.destroy(); // close the connection
+      resolve(false);
+    });
+
+    socket.on("error", (err) => {
+      socket.destroy(); // close the connection
+      if ((err as any).code === "ECONNREFUSED") {
+        resolve(false);
+      } else {
+        reject(err);
+      }
+    });
+
+    socket.connect(port, host);
+  });
 }
 
-async function startMFT(restart=false) {
+const isMftRunning = async () => {
+  // TODO: Implement a better way to check if MFT server is running and available. Will need changes in MFT server or standalone service daemon.
+  const mftDir = path.join(os.homedir(), ".mft");
+  const consulPidPath = path.join(mftDir, "consul.pid");
+  const mftPidPath = path.join(
+    mftDir,
+    "Standalone-Service-0.01",
+    "bin",
+    "service-pid"
+  );
+
+  return (
+    fs.existsSync(consulPidPath) &&
+    fs.existsSync(mftPidPath) &&
+    (await isPortOpen(8500)) &&
+    (await isPortOpen(7003))
+  );
+};
+
+async function startMFT(restart = false) {
   console.debug("Setting up MFT Services...");
 
-  if (!restart && isMftRunning()) {
+  if (!restart && (await isMftRunning())) {
     console.debug("MFT services are already running");
     return;
   }
@@ -302,10 +343,10 @@ async function startMFT(restart=false) {
       console.debug("MFT service started");
       mftRunning = true;
     } catch (err) {
-      console.error("MFT service not running:", err)
+      console.error("MFT service not running:", err);
       console.debug("Trying to restart MFT service...");
     }
-  }  
+  }
 }
 
 export { startMFT };
