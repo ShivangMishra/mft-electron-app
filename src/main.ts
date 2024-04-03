@@ -2,6 +2,7 @@ import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'path';
 import { listStoragesRpc, removeSecretForStorage } from './grpc/common/storageCommon';
 import { addAwsS3Storage, fetchAwsS3BucketList, lsStorage } from './grpc/storage';
+import { platform } from "process";
 import { startMFT } from './utils/mftBootstrap';
 import { exec } from 'child_process';
 
@@ -41,13 +42,17 @@ const createWindow = () => {
 app.on('ready', () => {
   createWindow();
   ipcMain.handle("storageList:request", async (event) => {
-    try {
-      await startMFT(process.platform === "win32");
-    } catch (error) {
-      console.error("Failed to start MFT", error.message);
-      return new Promise((resolve, reject) => {
-        reject(error.message);
-      });
+    if (platform !== "win32") {
+      try {
+        await startMFT();
+      } catch (error) {
+        console.error("Failed to start MFT", error.message);
+        return new Promise((resolve, reject) => {
+          reject(error.message);
+        });
+      }
+    } else {
+      console.log("Windows platform detected, skipping MFT check. If MFT is not running, please start it manually.");
     }
     return new Promise((resolve, reject) => {
       listStoragesRpc()
