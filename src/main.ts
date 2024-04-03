@@ -42,10 +42,9 @@ app.on('ready', () => {
   createWindow();
   ipcMain.handle("storageList:request", async (event) => {
     try {
-      await startMFT();
+      await startMFT(process.platform === "win32");
     } catch (error) {
-      console.error("Failed to start MFT", error.message, "\nExiting...");
-      app.quit();
+      console.error("Failed to start MFT", error.message);
       return new Promise((resolve, reject) => {
         reject(error.message);
       });
